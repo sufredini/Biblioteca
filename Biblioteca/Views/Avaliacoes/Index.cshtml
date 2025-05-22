@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<Biblioteca.Models.Avaliacao>
-
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 @{
     ViewData["Title"] = "Index";
 }
@@ -7,53 +7,68 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-sm btn btn-dark">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nota)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Comentario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataAvaliacao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Livro)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Usuario)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nota)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Comentario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataAvaliacao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Livro.LivroId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Usuario.UsuarioId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.AvaliacaoId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.AvaliacaoId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AvaliacaoId">Delete</a>
-            </td>
-        </tr>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-light d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Avaliações</h3>
+                    <a asp-action="Create" class="btn btn-sm btn btn-dark">Nova Avaliação</a>
+                </div>
+                <div class="card-body">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Livro</th>
+                                    <th>Nota</th>
+                                    <th>Comentário</th>
+                                    <th>Data</th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.Livro?.Titulo</td>
+                                        <td>
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <span style="color:gold;font-size:1.2rem;">
+                                                    @(i <= item.Nota ? "★" : "☆")
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>@item.Comentario</td>
+                                        <td>@item.DataAvaliacao.ToString("dd/MM/yyyy")</td>
+                                        <td class="text-center">
+                                            <a asp-action="Edit" asp-route-id="@item.AvaliacaoId" class="btn btn-dark btn-primary me-1" title="Editar">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.AvaliacaoId" class="btn btn-dark" title="Excluir">
+                                                <i class="bi bi-trash"></i> Excluir
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
-    </tbody>
-</table>
+
