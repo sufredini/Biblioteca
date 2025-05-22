@@ -89,12 +89,51 @@
         </div>
     </div>
 
+
+    <div class="modal fade" id="detalhesModal" tabindex="-1" aria-labelledby="detalhesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detalhesModalLabel">Detalhes do Livro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <img id="modalCapa" src="" alt="Capa do Livro" class="img-fluid" style="max-height:200px;object-fit:cover;">
+                    </div>
+                    <h4 id="modalTitulo"></h4>
+                    <h5 id="modalAutor" class="lead"></h5>
+                    <p><span class="badge bg-secondary" id="modalGenero"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="">
         <main role="main" class="">
             @RenderBody()
         </main>
     </div>
 
+    <script>
+        var detalhesModal = document.getElementById('detalhesModal');
+        detalhesModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var titulo = button.getAttribute('data-titulo');
+            var autor = button.getAttribute('data-autor');
+            var genero = button.getAttribute('data-genero');
+            var capa = button.getAttribute('data-capa');
+
+            document.getElementById('modalTitulo').textContent = titulo;
+            document.getElementById('modalAutor').textContent = autor;
+            document.getElementById('modalGenero').textContent = genero || '';
+            document.getElementById('modalCapa').src = capa;
+        });
+    </script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery.mask/jquery.mask.min.js"></script>

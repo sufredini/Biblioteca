@@ -19,6 +19,16 @@ namespace Biblioteca.Controllers
             _context = context;
         }
 
+        /*
+         public IActionResult Create()
+         {
+             ViewData["LivroId"] = new SelectList(_context.Livros, "LivroId", "LivroId");
+             ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId");
+             return View();
+         }
+        */
+
+
         // GET: Avaliacoes
         public async Task<IActionResult> Index()
         {
@@ -47,11 +57,11 @@ namespace Biblioteca.Controllers
         }
 
         // GET: Avaliacoes/Create
-        public IActionResult Create()
+        public IActionResult Create(int livroId)
         {
-            ViewData["LivroId"] = new SelectList(_context.Livros, "LivroId", "LivroId");
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId");
-            return View();
+            var avaliacao = new Avaliacao { LivroId = livroId };
+            ViewData["Livro"] = _context.Livros.FirstOrDefault(l => l.LivroId == livroId);
+            return View(avaliacao);
         }
 
         // POST: Avaliacoes/Create
@@ -59,18 +69,22 @@ namespace Biblioteca.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AvaliacaoId,Nota,Comentario,DataAvaliacao,LivroId,UsuarioId")] Avaliacao avaliacao)
+        public async Task<IActionResult> Create([Bind("Nota,Comentario,LivroId")] Avaliacao avaliacao)
         {
             if (ModelState.IsValid)
             {
+                avaliacao.DataAvaliacao = DateTime.Now;
+                // Defina o UsuarioId conforme sua lógica de autenticação
+                avaliacao.UsuarioId = 1; // Exemplo: usuário fixo para teste
                 _context.Add(avaliacao);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["LivroId"] = new SelectList(_context.Livros, "LivroId", "LivroId", avaliacao.LivroId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId", avaliacao.UsuarioId);
+            ViewData["Livro"] = _context.Livros.FirstOrDefault(l => l.LivroId == avaliacao.LivroId);
             return View(avaliacao);
         }
+
+
 
         // GET: Avaliacoes/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -93,6 +107,11 @@ namespace Biblioteca.Controllers
         // POST: Avaliacoes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+
+
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("AvaliacaoId,Nota,Comentario,DataAvaliacao,LivroId,UsuarioId")] Avaliacao avaliacao)
@@ -126,6 +145,8 @@ namespace Biblioteca.Controllers
             ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId", avaliacao.UsuarioId);
             return View(avaliacao);
         }
+
+
 
         // GET: Avaliacoes/Delete/5
         public async Task<IActionResult> Delete(int? id)
