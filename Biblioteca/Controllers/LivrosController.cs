@@ -203,7 +203,7 @@ namespace Biblioteca.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("LivroId,Titulo,Autor,Descricao,Editora,DataPublicacao,NumeroPaginas,Quantidade,UrlCapa,ISBN10,ISBN13,GeneroId")] Livro livro)
+        public async Task<IActionResult> Edit(int id, [Bind("LivroId,Titulo,Autor,Descricao,Editora,DataPublicacao,NumeroPaginas,Quantidade,UrlCapa,ISBN10,ISBN13,GeneroId")] Livro livro, IFormFile CapaUpload)
         {
             if (id != livro.LivroId)
             {
@@ -214,6 +214,43 @@ namespace Biblioteca.Controllers
             {
                 try
                 {
+
+                    if (CapaUpload != null && CapaUpload.Length > 0)
+                    {
+                        // Definir o caminho para salvar a imagem
+                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Books");
+
+                        // Extrai a extensão do arquivo enviado (ex: .jpg, .png)
+                        var fileExtension = Path.GetExtension(CapaUpload.FileName);
+
+                        // Usa apenas o ID do livro + extensão
+                        var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
+                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+
+                        // Se já existir, adiciona um GUID ao nome
+                        if (System.IO.File.Exists(filePath))
+                        {
+                            uniqueFileName = $"{Guid.NewGuid()}_{fileExtension}";
+                            filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                        }
+
+                        // Criar a pasta se não existir
+                        if (!Directory.Exists(uploadsFolder))
+                        {
+                            Directory.CreateDirectory(uploadsFolder);
+                        }
+
+                        // Salvar o arquivo no diretório
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await CapaUpload.CopyToAsync(fileStream);
+                        }
+
+                        // Atualizar o campo UrlCapa com o caminho relativo
+                        livro.UrlCapa = Path.Combine("Resources", "Books", uniqueFileName).Replace("\\", "/");
+                    }
+
                     _context.Update(livro);
                     await _context.SaveChangesAsync();
                 }
