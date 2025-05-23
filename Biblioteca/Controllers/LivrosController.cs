@@ -251,7 +251,7 @@ namespace Biblioteca.Controllers
                         livro.UrlCapa = Path.Combine("Resources", "Books", uniqueFileName).Replace("\\", "/");
                     }
 
-                    _context.Update(livro);
+                    _context.Livros.Update(livro);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
