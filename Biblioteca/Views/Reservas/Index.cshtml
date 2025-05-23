@@ -31,13 +31,20 @@
             <tbody>
                 @if (Model != null && Model.Any())
                 {
-                    foreach (var item in Model)
+                    foreach (var reserva in Model)
                     {
                         <tr>
-                            <td>@item.DataReserva.ToString("dd/MM/yyyy")</td>
-                            <td>@item.Livro?.Titulo</td>
+                            <td>@reserva.DataReserva.ToString("dd/MM/yyyy")</td>
+                            <td>@reserva.Livro?.Titulo</td>
                             <td>
-                                @(item.Cancelada ? "Cancelada" : (item.LivroRetirado ? "Retirada" : "Pendente"))
+                                @(reserva.Cancelada ? "Cancelada" : (reserva.LivroRetirado ? "Retirada" : "Pendente"))
+                                @if (!reserva.Cancelada)
+                                {
+                                    <form asp-action="Cancelar" asp-route-id="@reserva.ReservaId" method="post" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm ms-2">Cancelar</button>
+                                    </form>
+                                }
                             </td>
                         </tr>
                     }
@@ -49,6 +56,7 @@
                     </tr>
                 }
             </tbody>
+
         </table>
     </div>
     <div class="col-1 col-md-2 col-lg-2"></div>
